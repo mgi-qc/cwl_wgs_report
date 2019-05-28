@@ -25,45 +25,19 @@ def is_number(s):
 
 mm_dd_yy = datetime.datetime.now().strftime("%m%d%y")
 
-# #Check for metrics file;
-# if not glob.glob('*.cwl.metrics.*.tsv'):
-#     sys.exit('cwl.metrics file not found')
-# else:
-#     metrics_files = glob.glob('*.cwl.metrics.{}.tsv'.format(mm_dd_yy))
-#
-# #Check, open, and create template file using Template;
-# if not os.path.isfile('/gscmnt/gc2783/qc/GMSworkorders/reports/wgs_results_template_file.txt'):
-#     sys.exit('Template file not found.')
-#
-# with open('/gscmnt/gc2783/qc/GMSworkorders/reports/wgs_results_template_file.txt', 'r', encoding='utf-8') as fh:
-#     template = fh.read()
-#     template_file = Template(template)
-#
-
-
-#**********TEMP TSV READ IN FOR WGS REPORT**********************
+#Check for metrics file;
 if not glob.glob('*.cwl.metrics.*.tsv'):
-    sys.exit('Metrics FILE NOT FOUND')
+    sys.exit('cwl.metrics file not found')
 else:
-    metrics_files = glob.glob('*.cwl.metrics.{}.tsv'.format(mm_dd_yy))
+    metrics_files = glob.glob('*.cwl.metrics.*.tsv'.format(mm_dd_yy))
 
-#************************************************
+#Check, open, and create template file using Template;
+if not os.path.isfile('/gscmnt/gc2783/qc/GMSworkorders/reports/wgs_results_template_file.txt'):
+    sys.exit('Template file not found.')
 
-#***************TEMP TEMPLATE FILE CHECK AND READ FOR WGS REPORT*********************
-
-#Check for template;
-if not os.path.isfile('/Users/antonacci.t.j/Library/Preferences/PyCharmCE2019.1/scratches/wgs_results_template_file.txt'):
-    sys.exit('TEMP NOT FOUND')
-
-#Open and create template file using Template;
-with open('/Users/antonacci.t.j/Library/Preferences/PyCharmCE2019.1/scratches/wgs_results_template_file.txt', 'r', encoding='utf-8') as fh:
+with open('/gscmnt/gc2783/qc/GMSworkorders/reports/wgs_results_template_file.txt', 'r', encoding='utf-8') as fh:
     template = fh.read()
     template_file = Template(template)
-
-# *********************************************************************
-
-
-
 
 
 
@@ -78,8 +52,9 @@ for file in metrics_files:
 
 
     file_name = file.split('.')[0]
-    SSheet_outfile = '{}.cwl.results.{}.tsv'.format(file_name, mm_dd_yy)
-    report_outfile = '{}.cwl.report.{}.txt'.format(file_name, mm_dd_yy)
+    file_date = file.split('.')[-2]
+    SSheet_outfile = '{}.cwl.results.{}.tsv'.format(file_name, file_date)
+    report_outfile = '{}.cwl.report.{}.txt'.format(file_name, file_date)
 
     # Ini. dicts
     prnt_report = False
