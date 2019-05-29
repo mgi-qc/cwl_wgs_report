@@ -40,7 +40,6 @@ with open('/gscmnt/gc2783/qc/GMSworkorders/reports/wgs_results_template_file.txt
     template_file = Template(template)
 
 
-
 metrics_tracked = ['HAPLOID COVERAGE', 'discordant_rate', 'inter-chromosomal_Pairing rate',
                     'FREEMIX', 'FOP: PF_MISMATCH_RATE', 'SOP: PF_MISMATCH_RATE']
 
@@ -136,19 +135,19 @@ for file in metrics_files:
                     met_not_check.append(met)
 
             if 'HAPLOID COVERAGE' in met_to_check and float(line['HAPLOID COVERAGE']) < float(hap_value):
-                failed_metrics.append(['HAPLOID COVERAGE'])
+                failed_metrics.append('HAPLOID COVERAGE')
                 template_file_dict['HAPLOID COVERAGE'] += 1
 
             if 'discordant_rate' in met_to_check and float(line['discordant_rate']) > 5:
-                failed_metrics.append(['discordant_rate'])
+                failed_metrics.append('discordant_rate')
                 template_file_dict['discordant_rate'] += 1
 
             if 'inter-chromosomal_Pairing rate' in met_to_check and float(line['inter-chromosomal_Pairing rate']) > 0.05:
-                failed_metrics.append(['inter-chromosomal_Pairing rate'])
+                failed_metrics.append('inter-chromosomal_Pairing rate')
                 template_file_dict['inter-chromosomal_Pairing rate'] += 1
 
             if 'FREEMIX' in met_to_check and float(line['FREEMIX']) > 0.05:
-                failed_metrics.append(['FREEMIX'])
+                failed_metrics.append('FREEMIX')
                 template_file_dict['FREEMIX'] += 1
 
             if 'FOP: PF_MISMATCH_RATE' in met_to_check and float(line['FOP: PF_MISMATCH_RATE']) > 0.05:
@@ -156,7 +155,7 @@ for file in metrics_files:
                 template_file_dict['FOP: PF_MISMATCH_RATE'] += 1
 
             if 'SOP: PF_MISMATCH_RATE' in met_to_check and float(line['SOP: PF_MISMATCH_RATE']) > 0.05:
-                failed_metrics.append(['SOP: PF_MISMATCH_RATE'])
+                failed_metrics.append('SOP: PF_MISMATCH_RATE')
                 template_file_dict['SOP: PF_MISMATCH_RATE'] += 1
 
             count += 1
@@ -172,7 +171,7 @@ for file in metrics_files:
 
             else:
                 line['QC_Status'] = 'PASS'
-                line['QC_failed_metrics'] = ','.join(failed_metrics)
+                line['QC_failed_metrics'] = 'NA'
                 pass_count += 1
 
             for total in totals_list:
@@ -195,7 +194,7 @@ for file in metrics_files:
         if prnt_report:
 
             for metric in metrics_tracked:
-                if template_file_dict[metric] is 0:
+                if template_file_dict[metric] is 0 and pass_count + fail_count != count:
                     template_file_dict[metric] = 'NA'
 
             #set unchecked metrics to NA
@@ -204,6 +203,7 @@ for file in metrics_files:
 
             with open(report_outfile, 'w', encoding='utf-8') as fhr:
                 fhr.write(template_file.substitute(WOID = template_file_dict['WOID'],
+                                                   HAP_IN = hap_in,
                                                    SEQUENCING_NOTE = '\n'.join(seq_notes),
                                                    SAMPLE_NUMBER = count,
                                                    PASS_SAMPLES = pass_count,
