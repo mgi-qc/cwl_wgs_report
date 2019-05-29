@@ -1,0 +1,60 @@
+Data quality report for work order: ${WOID}
+
+QC Pass Metrics 
+(samples must meet all requirements)
+HAPLOID COVERAGE: ${HAP_IN} (User defined)
+discordant_rate < 5
+inter-chromosomal_Pairing rate < 0.05
+FREEMIX < 0.05
+FOP: PF_MISMATCH_RATE < 0.05
+SOP: PF_MISMATCH_RATE < 0.05
+
+Additional Metrics: 
+No other metric required/reviewed for assignment of QC pass/fail judgement
+
+
+SEQUENCING_NOTE:
+https://confluence.ris.wustl.edu/pages/viewpage.action?spaceKey=AD&title=WorkOrder+${WOID}
+
+${SEQUENCING_NOTE}
+
+Number of Flow Cell Lanes or Desired Coverage:
+Special Instructions:
+
+QC Summary Report:
+Number of samples QC'ed = ${SAMPLE_NUMBER}
+Number of samples that pass = ${PASS_SAMPLES}
+Number of samples that fail = ${FAIL}
+
+Samples That Failed QC Failed Metrics:
+HAPLOID COVERAGE = ${HAP_FAIL_COUNT}
+discordant_rate = ${DIS_RT_FAIL_COUNT}
+inter-chromosomal_Pairing rate= ${INTER_CHR_FAIL_COUNT}
+FREEMIX = ${FREE_FAIL_COUNT}
+FOP: PF_MISMATCH_RATE = ${FOP_FAIL_COUNT}
+SOP: PF_MISMATCH_RATE = ${SOP_FAIL_COUNT}
+
+
+QC Summary Statistics:
+AVERAGE HAPLOID COVERAGE = ${HAPLOID_COVERAGE}
+AVERAGE discordant_rate = ${discordant_rate}
+AVERAGE inter-chromosomal_Pairing rate = ${inter_chromosomal_Pairing_rate}
+AVERAGE FREEMIX = ${FREEMIX}
+AVERAGE FOP: PF_MISMATCH_RATE = ${FOP_PF_MISMATCH_RATE}
+AVERAGE SOP: PF_MISMATCH_RATE= ${SOP_PF_MISMATCH_RATE}
+AVERAGE MEAN_INSERT_SIZE= ${MEAN_INSERT_SIZE}
+AVERAGE STANDARD_DEVIATION = ${STANDARD_DEVIATION}
+AVERAGE PCT_ADAPTER = ${PCT_ADAPTER}
+AVERAGE PCT_20X = ${PCT_20X}
+AVERAGE PCT_30X = ${PCT_30X}
+AVERAGE PF_ALIGNED_BASES= ${PF_ALIGNED_BASES}
+AVERAGE PERCENT_DUPLICATION= ${PERCENT_DUPLICATION}
+
+
+Data Transfer Directory =
+ 
+Additional Comments:
+
+Attachments:
+${RESULTS_SPREADSHEET}
+
