@@ -225,7 +225,6 @@ for file in metrics_files:
             ofd.writerow(line)
 
         avg_dict = {}
-        print('{} not found for {}'.format(', '.join(met_not_check), file_name))
 
         for total in totals_list:
             if totals_dict[total] != 0:
