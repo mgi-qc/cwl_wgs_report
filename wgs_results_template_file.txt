@@ -51,7 +51,7 @@ AVERAGE PF_ALIGNED_BASES= ${PF_ALIGNED_BASES}
 AVERAGE PERCENT_DUPLICATION= ${PERCENT_DUPLICATION}
 
 
-Data Transfer Directory =
+Data Transfer Directory = ${TRANSFER_DIR}
  
 Additional Comments:
 
