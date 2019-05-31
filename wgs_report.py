@@ -16,12 +16,52 @@ import argparse
 import subprocess
 from string import Template
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-nod', help='Turn off directory creation', action='store_true')
+args = parser.parse_args()
+
 def is_number(s):
     try:
         float(s)
         return True
     except ValueError:
         return False
+
+def data_dir_check(dir_list, woid, date):
+    """Create and return transfer directory if 'model' found in dir path."""
+
+    # return NA if no transfer dir found
+    transfer_dir = 'NA'
+
+    # iterate over data dirs
+    for directory in dir_list:
+        # if model found, create transfer dir and return path
+        if os.path.isdir(directory) and 'model' in directory:
+
+            dir_path_items = directory.split('/')
+
+            for no, d in enumerate(dir_path_items):
+
+                if 'model' in d:
+
+                    model_directory = '/'.join(dir_path_items[:no + 1]) + '/'
+                    transfer_dir = os.path.join(model_directory, 'data_transfer/{}_{}/'.format(woid, date))
+
+                    if os.path.isdir(transfer_dir):
+                        print('Transfer Directory already exists: {}'.format(transfer_dir))
+                        return 'NA'
+
+                    if os.path.isdir(model_directory) and not os.path.isdir(transfer_dir):
+                        try:
+                            os.mkdir(transfer_dir)
+                        except OSError:
+                            # raise OSError("Can't create destination directory {}!".format(transfer_dir))
+                            return 'NA'
+                        print('Data transfer directory created:\n{}'.format(transfer_dir))
+                        return transfer_dir
+
+    return transfer_dir
 
 mm_dd_yy = datetime.datetime.now().strftime("%m%d%y")
 
@@ -60,6 +100,7 @@ for file in metrics_files:
     template_file_dict = {}
     totals_dict = {}
     tot_cnt_dict = {}
+    data_directories = []
 
 
     print('Confluence link: \nhttps://confluence.ris.wustl.edu/pages/viewpage.action?spaceKey=AD&title=WorkOrder+{}'.format(file_name))
@@ -123,6 +164,7 @@ for file in metrics_files:
             line['QC_failed_metrics'] = ''
             failed_metrics = []
             template_file_dict['WOID'] = line['WorkOrder']
+            data_directories.append(line['data_directory'])
 
             #Check metrics...
             met_to_check = []
@@ -183,7 +225,6 @@ for file in metrics_files:
             ofd.writerow(line)
 
         avg_dict = {}
-        print('{} not found for {}'.format(', '.join(met_not_check), file_name))
 
         for total in totals_list:
             if totals_dict[total] != 0:
@@ -200,6 +241,10 @@ for file in metrics_files:
             #set unchecked metrics to NA
             #print missing metric
             ##print report
+
+            transfer_data_directory = 'NA'
+            if not args.nod:
+                transfer_data_directory = data_dir_check(data_directories, template_file_dict['WOID'], mm_dd_yy)
 
             with open(report_outfile, 'w', encoding='utf-8') as fhr:
                 fhr.write(template_file.substitute(WOID = template_file_dict['WOID'],
@@ -227,18 +272,19 @@ for file in metrics_files:
                                                    PCT_30X = avg_dict['PCT_30X'],
                                                    PF_ALIGNED_BASES = avg_dict['PF_ALIGNED_BASES'],
                                                    PERCENT_DUPLICATION = avg_dict['PERCENT_DUPLICATION'],
+                                                   TRANSFER_DIR=transfer_data_directory,
                                                    RESULTS_SPREADSHEET = SSheet_outfile))
             print('Report generated for {}'.format(file_name))
             print('-----------------------')
 
             builds = ','.join(last_succeeded_build_id)
 
-            with open('{}.Data_transfer_help.txt'.format(template_file_dict['WOID']), 'w') as df:
-                df.write('Data Transfer Directory =\ncd to parent data dir\ncd to model_data'
-                         '\nmkdir data_transfer/{}\ngenome model cwl-pipeline prep-for-transfer --md5sum'
-                         ' --directory=full_path../data_transfer/{}  --builds {}'
-                         ' or model_groups.project.id {}'.format(template_file_dict['WOID'], template_file_dict['WOID'],
-                                                                 builds, template_file_dict['WOID']))
+            with open('{}.Data_transfer_help.{}.txt'.format(template_file_dict['WOID'], file_date), 'w') as df:
+                df.write('Data Transfer Directory ={td}\ncd to parent data dir\ncd to model_data'
+                      '\nmkdir data_transfer/{w}\nTransfer Commands:\n\ngenome model cwl-pipeline prep-for-transfer --md5sum'
+                      ' --directory={td}  --builds {b}\n\n'
+                      'genome model cwl-pipeline prep-for-transfer --md5sum'
+                      ' --directory={td} model_groups.project.id={w}\n'.format(td=transfer_data_directory, w=template_file_dict['WOID'], b=builds,))
 
         else:
             print('No report generated for {}; No required metrics found.'.format(file_name))
